@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"go-restful-api/helper"
 	"go-restful-api/model/domain"
 )
@@ -52,7 +53,7 @@ func (c *categoryRepository) FindById(ctx context.Context, tx *sql.Tx, categoryI
 		helper.PanicIfError(err)
 		return category, nil
 	} else {
-		return category, nil
+		return category, errors.New("Category Not Found")
 	}
 }
 func (c *categoryRepository) FindAll(ctx context.Context, tx *sql.Tx) ([]domain.Category, error) {

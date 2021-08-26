@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"go-restful-api/helper"
 	"go-restful-api/model/domain"
 )
@@ -16,20 +15,15 @@ func NewCategoryRepository() CategoryRepository {
 }
 
 func (c *categoryRepository) Save(ctx context.Context, tx *sql.Tx, category domain.Category) domain.Category {
-	sql := "insert into category(name) value(?)"
-	result, err := tx.ExecContext(ctx, sql, category.Name)
+	sql := "INSERT INTO category(name) values($1) RETURNING id"
+	err := tx.QueryRowContext(ctx, sql, category.Name).Scan(&category.Id)
 	helper.PanicIfError(err)
-
-	id, err := result.LastInsertId()
-
-	helper.PanicIfError(err)
-	category.Id = int(id)
 
 	return category
 }
 
 func (c *categoryRepository) Update(ctx context.Context, tx *sql.Tx, category domain.Category) domain.Category {
-	sql := "update category set name = ? where id = ?"
+	sql := "update category set name = $1 where id = $2"
 
 	_, err := tx.ExecContext(ctx, sql, category.Name, category.Id)
 	helper.PanicIfError(err)
@@ -37,35 +31,37 @@ func (c *categoryRepository) Update(ctx context.Context, tx *sql.Tx, category do
 	return category
 }
 func (c *categoryRepository) Delete(ctx context.Context, tx *sql.Tx, category domain.Category) {
-	sql := "update from category where id = ?"
+	sql := "delete from category where id = $1"
 
 	_, err := tx.ExecContext(ctx, sql, category.Id)
 	helper.PanicIfError(err)
 }
 func (c *categoryRepository) FindById(ctx context.Context, tx *sql.Tx, categoryId int) (domain.Category, error) {
-	sql := "select id, name from category where id = ?"
-
+	sql := "SELECT id, name from category WHERE id=$1"
 	rows, err := tx.QueryContext(ctx, sql, categoryId)
 	helper.PanicIfError(err)
 
-	category := domain.Category{}
+	defer rows.Close()
 
+	category := domain.Category{}
 	if rows.Next() {
 		err := rows.Scan(
 			&category.Id,
 			&category.Name)
+
 		helper.PanicIfError(err)
 		return category, nil
 	} else {
-		return category, errors.New("Category Not Found")
+		return category, nil
 	}
 }
 func (c *categoryRepository) FindAll(ctx context.Context, tx *sql.Tx) ([]domain.Category, error) {
-	sql := "select id, name from category"
+	sql := "SELECT id, name FROM category"
 
 	rows, err := tx.QueryContext(ctx, sql)
 	helper.PanicIfError(err)
 
+	defer rows.Close()
 	categories := []domain.Category{}
 	for rows.Next() {
 		category := domain.Category{}
@@ -77,6 +73,5 @@ func (c *categoryRepository) FindAll(ctx context.Context, tx *sql.Tx) ([]domain.
 
 		categories = append(categories, category)
 	}
-
 	return categories, nil
 }

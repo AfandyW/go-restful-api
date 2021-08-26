@@ -80,20 +80,15 @@ func (controller *categoryControllerImpl) FindById(writer http.ResponseWriter, r
 
 	categoryResponse := controller.CategoryService.FindById(request.Context(), id)
 
-	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
-		Status: "Accepted",
-		Data:   categoryResponse,
-	}
+	webResponse := helper.ResponseCategoryNotNil(categoryResponse)
 
 	helper.WriterToResponseBody(writer, webResponse)
 }
 func (controller *categoryControllerImpl) FindAll(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	categoriesResponse := controller.CategoryService.FindAll(request.Context())
-
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
-		Status: "Accepted",
+		Code:   http.StatusOK,
+		Status: "OK",
 		Data:   categoriesResponse,
 	}
 

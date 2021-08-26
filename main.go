@@ -21,14 +21,14 @@ func main() {
 	helper.PanicIfError(err)
 
 	host := os.Getenv("HOST")
-	port := os.Getenv("PORT")
+	dbport := os.Getenv("PORT")
 	serverPort := os.Getenv("SERVER_PORT")
 	dbUser := os.Getenv("USER")
 	dbPassword := os.Getenv("PASSWORD")
 	dbName := os.Getenv("DBNAME")
 
 	validate := validator.New()
-	db := app.NewDB(port, host, dbUser, dbPassword, dbName)
+	db := app.NewDB(dbport, host, dbUser, dbPassword, dbName)
 	categoryRepository := repository.NewCategoryRepository()
 	categoryService := service.NewCategoryService(categoryRepository, db, validate)
 	categoryController := controller.NewCategoryController(categoryService)
@@ -44,7 +44,7 @@ func main() {
 		Addr:    host + ":" + serverPort,
 		Handler: router,
 	}
-	fmt.Printf("Listening to port %s", port)
+	fmt.Printf("Listening to port %s", serverPort)
 	err = server.ListenAndServe()
 	helper.PanicIfError(err)
 }

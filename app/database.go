@@ -8,9 +8,10 @@ import (
 )
 
 func NewDB(DBPort, DBHost, DBUser, DBPassword, DBName string) *sql.DB {
-	// urlDatabase := "postgres://pqgotest@localhost:5432/go_rest?sslmode=disable"
-	psqlconn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", DBHost, DBPort, DBUser, DBPassword, DBName)
+	// urlDatabase := "postgres://mapple@localhost:5432/go_rest?sslmode=disable"
+	psqlconn := fmt.Sprintf(`dbname=%s user=%s password=%s host=%s port=%s  sslmode=disable`, DBName, DBUser, DBPassword, DBHost, DBPort)
 	db, err := sql.Open("postgres", psqlconn)
+	err = db.Ping()
 	helper.PanicIfError(err)
 
 	db.SetMaxIdleConns(5)

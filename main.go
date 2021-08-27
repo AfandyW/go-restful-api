@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"go-restful-api/app"
 	"go-restful-api/controller"
-	"go-restful-api/exception"
 	"go-restful-api/helper"
+	"go-restful-api/middleware"
 	"go-restful-api/repository"
 	"go-restful-api/service"
 	"net/http"
@@ -13,7 +13,6 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/joho/godotenv"
-	"github.com/julienschmidt/httprouter"
 	_ "github.com/lib/pq"
 )
 
@@ -33,19 +32,11 @@ func main() {
 	categoryRepository := repository.NewCategoryRepository()
 	categoryService := service.NewCategoryService(categoryRepository, db, validate)
 	categoryController := controller.NewCategoryController(categoryService)
-	router := httprouter.New()
-
-	router.GET("/api/categories", categoryController.FindAll)
-	router.GET("/api/categories/:categoryId", categoryController.FindById)
-	router.POST("/api/categories", categoryController.Create)
-	router.PUT("/api/categories/:categoryId", categoryController.Update)
-	router.DELETE("/api/categories/:categoryId", categoryController.Delete)
-
-	router.PanicHandler = exception.ErrorHandler
+	router := app.NewRouter(categoryController)
 
 	server := http.Server{
 		Addr:    host + ":" + serverPort,
-		Handler: router,
+		Handler: middleware.NewAuthMiddleware(router),
 	}
 	fmt.Printf("Listening to port %s", serverPort)
 	err = server.ListenAndServe()

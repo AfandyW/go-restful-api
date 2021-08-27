@@ -51,8 +51,8 @@ func (controller *categoryControllerImpl) Update(writer http.ResponseWriter, req
 	categoryResponse := controller.CategoryService.Update(request.Context(), categoryUpdateRequest)
 
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
-		Status: "Accepted",
+		Code:   http.StatusOK,
+		Status: "OK",
 		Data:   categoryResponse,
 	}
 
@@ -66,8 +66,8 @@ func (controller *categoryControllerImpl) Delete(writer http.ResponseWriter, req
 	controller.CategoryService.Delete(request.Context(), id)
 
 	webResponse := web.WebResponse{
-		Code:   http.StatusAccepted,
-		Status: "Accepted",
+		Code:   http.StatusOK,
+		Status: "OK",
 		Data:   nil,
 	}
 

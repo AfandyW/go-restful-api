@@ -22,11 +22,11 @@ func validationError(writer http.ResponseWriter, request *http.Request, err inte
 	exception, ok := err.(validator.ValidationErrors)
 	if ok {
 		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(http.StatusInternalServerError)
+		writer.WriteHeader(http.StatusBadRequest)
 
 		webResponse := web.WebResponse{
 			Code:   http.StatusBadRequest,
-			Status: "Bad Request",
+			Status: "BAD REQUEST",
 			Data:   exception.Error(),
 		}
 
@@ -41,11 +41,11 @@ func notFoundError(writer http.ResponseWriter, request *http.Request, err interf
 	exception, ok := err.(NotFoundError)
 	if ok {
 		writer.Header().Set("Content-Type", "application/json")
-		writer.WriteHeader(http.StatusInternalServerError)
+		writer.WriteHeader(http.StatusNotFound)
 
 		webResponse := web.WebResponse{
 			Code:   http.StatusNotFound,
-			Status: "Not Found",
+			Status: "NOT FOUND",
 			Data:   exception.Error,
 		}
 
@@ -62,7 +62,7 @@ func internalServerError(writer http.ResponseWriter, request *http.Request, err 
 
 	webResponse := web.WebResponse{
 		Code:   http.StatusInternalServerError,
-		Status: "Internal Server Error",
+		Status: "INTERNAL SERVER ERROR",
 		Data:   err,
 	}
 

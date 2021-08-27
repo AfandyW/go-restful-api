@@ -11,4 +11,5 @@ require (
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.10.2 // indirect
+	github.com/stretchr/testify v1.7.0 // indirect
 )
